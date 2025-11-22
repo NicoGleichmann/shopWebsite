@@ -1,6 +1,8 @@
+// frontend/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Menu, X, Zap } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Zap, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from "react-router-dom";
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,13 +31,13 @@ export const Navbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group">
           <div className="relative">
             <Zap className="w-6 h-6 text-lumio-neon group-hover:animate-pulse" />
             <div className="absolute inset-0 bg-lumio-neon blur-lg opacity-50 group-hover:opacity-80 transition-opacity" />
           </div>
           <span className="font-display font-bold text-xl tracking-widest text-white">LUMIO</span>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
@@ -55,10 +57,13 @@ export const Navbar: React.FC = () => {
           <button className="p-2 text-gray-300 hover:text-white transition-colors">
             <Search className="w-5 h-5" />
           </button>
-          <button className="relative p-2 text-gray-300 hover:text-white transition-colors group">
+          <Link to="/login" className="p-2 text-gray-300 hover:text-white transition-colors">
+            <User className="w-5 h-5" />
+          </Link>
+          <Link to="/cart" className="relative p-2 text-gray-300 hover:text-white transition-colors group">
             <ShoppingBag className="w-5 h-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-lumio-hot rounded-full animate-pulse" />
-          </button>
+          </Link>
           
           {/* Mobile Toggle */}
           <button 
@@ -90,6 +95,13 @@ export const Navbar: React.FC = () => {
                   {link.name}
                 </a>
               ))}
+              <Link 
+                to="/login"
+                className="text-lg font-medium text-gray-200"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login / Register
+              </Link>
             </div>
           </motion.div>
         )}
