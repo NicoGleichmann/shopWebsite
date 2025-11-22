@@ -10,16 +10,19 @@ import SearchMenu from './components/SearchMenu';
 import { ProductPage } from './components/ProductPage';
 import { LookbookPage } from './components/LookbookPage';
 import { AllProductsPage } from './components/AllProductsPage';
+import { useAuth } from './context/AuthContext';
 
 const App: React.FC = () => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { isLoginModalOpen, openLoginModal, closeLoginModal, token, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <div className="bg-gray-900">
       <Navbar 
-        onLoginClick={() => setIsLoginOpen(true)}
+        onLoginClick={openLoginModal}
         onSearchClick={() => setIsSearchOpen(true)}
+        isLoggedIn={!!token}
+        onLogout={logout}
       />
       <main>
         <Routes>
@@ -31,7 +34,7 @@ const App: React.FC = () => {
           <Route path="/product/:id" element={<ProductPage />} />
         </Routes>
       </main>
-      <Login isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <Login isOpen={isLoginModalOpen} onClose={closeLoginModal} />
       <SearchMenu isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );

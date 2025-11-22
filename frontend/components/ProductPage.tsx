@@ -2,12 +2,14 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { PRODUCTS } from '../constants';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Star, ShoppingCart } from 'lucide-react';
 
 export const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const product = PRODUCTS.find(p => p.id === id);
   const { addToCart } = useCart();
+  const { token, openLoginModal } = useAuth();
 
   if (!product) {
     return (
@@ -16,6 +18,14 @@ export const ProductPage: React.FC = () => {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    if (token) {
+      addToCart(product);
+    } else {
+      openLoginModal();
+    }
+  };
 
   return (
     <div className="bg-lumio-dark min-h-screen text-white p-8 lg:p-16">
@@ -60,7 +70,7 @@ export const ProductPage: React.FC = () => {
           </div>
 
           <button 
-            onClick={() => addToCart(product)}
+            onClick={handleAddToCart}
             className="bg-lumio-neon text-black font-bold py-4 px-8 rounded-full text-lg hover:bg-cyan-300 transition-colors shadow-[0_0_25px_rgba(0,243,255,0.5)] flex items-center justify-center gap-3 w-full lg:w-auto"
           >
             <ShoppingCart className="w-6 h-6" />

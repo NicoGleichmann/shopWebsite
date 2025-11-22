@@ -8,12 +8,23 @@ import { useCart } from '../context/CartContext';
 import { ProductModal } from './ProductModal';
 import { Link } from 'react-router-dom';
 
+import { useAuth } from '../context/AuthContext';
+
 // --- HELPER COMPONENTS WITHIN APP.TSX TO SIMPLIFY ---
 
 // ... (other code)
 
 const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product) => void; }> = ({ product, onViewProduct }) => {
   const { addToCart } = useCart();
+  const { token, openLoginModal } = useAuth();
+
+  const handleAddToCart = () => {
+    if (token) {
+      addToCart(product);
+    } else {
+      openLoginModal();
+    }
+  };
 
   return (
     <GlassCard className="group relative flex flex-col h-full">
@@ -76,7 +87,7 @@ const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product
                 <span className="text-xl font-display font-bold text-white">€{product.price.toFixed(2)}</span>
             </div>
             <button 
-                onClick={() => addToCart(product)}
+                onClick={handleAddToCart}
                 className="bg-lumio-neon text-black font-bold py-2 px-4 rounded-lg text-sm hover:bg-cyan-300 transition-colors shadow-[0_0_15px_rgba(0,243,255,0.4)] flex items-center gap-2"
             >
                 <ShoppingCart className="w-4 h-4" />
