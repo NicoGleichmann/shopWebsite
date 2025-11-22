@@ -3,10 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Search, Menu, X, Zap, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from "react-router-dom";
+import { useCart } from '../context/CartContext';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onLoginClick: () => void;
+  onSearchClick?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = () => {} }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { cartItems } = useCart();
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,8 +26,7 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Shop', href: '#shop' },
+    { name: 'Home', href: '/' },
     { name: 'Bestseller', href: '#bestseller' },
     { name: 'Inspiration', href: '#inspiration' },
   ];
@@ -41,28 +49,45 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
-              className="text-sm font-medium text-gray-300 hover:text-white hover:text-glow-neon transition-all"
-            >
-              {link.name}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            if (link.href.startsWith('/')) {
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="text-sm font-medium text-gray-300 hover:text-white hover:text-glow-neon transition-all"
+                >
+                  {link.name}
+                </Link>
+              );
+            }
+            return (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-gray-300 hover:text-white hover:text-glow-neon transition-all"
+              >
+                {link.name}
+              </a>
+            );
+          })}
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button className="p-2 text-gray-300 hover:text-white transition-colors">
+          <button onClick={() => { onSearchClick(); }} className="p-2 text-gray-300 hover:text-white transition-colors">
             <Search className="w-5 h-5" />
           </button>
-          <Link to="/login" className="p-2 text-gray-300 hover:text-white transition-colors">
+          <button onClick={() => { onLoginClick(); }} className="p-2 text-gray-300 hover:text-white transition-colors">
             <User className="w-5 h-5" />
-          </Link>
+          </button>
           <Link to="/cart" className="relative p-2 text-gray-300 hover:text-white transition-colors group">
             <ShoppingBag className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-lumio-hot rounded-full animate-pulse" />
+            {totalItems > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 bg-lumio-hot rounded-full text-white text-xs flex items-center justify-center font-bold">
+                {totalItems}
+              </span>
+            )}
           </Link>
           
           {/* Mobile Toggle */}
@@ -84,24 +109,40 @@ export const Navbar: React.FC = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden glass-panel border-t border-white/10"
           >
-            <div className="flex flex-col p-6 gap-4">
-              {navLinks.map((link) => (
-                <a 
-                  key={link.name} 
-                  href={link.href}
-                  className="text-lg font-medium text-gray-200"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <Link 
-                to="/login"
+            <div className="flex flex-col p-6 gap-4">                
+              {navLinks.map((link) => {
+                if (link.href.startsWith('/')) {
+                  return (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className="text-lg font-medium text-gray-200"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                }
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="text-lg font-medium text-gray-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                );
+              })}
+              <button
+                onClick={() => {
+                  onLoginClick();
+                  setMobileMenuOpen(false);
+                }}
                 className="text-lg font-medium text-gray-200"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 Login / Register
-              </Link>
+              </button>
             </div>
           </motion.div>
         )}

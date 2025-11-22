@@ -1,17 +1,39 @@
 // frontend/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { HomePage } from './components/HomePage';
 import { Cart } from './components/Cart';
+import { Checkout } from './components/Checkout';
 import Login from './components/Login';
+import { Navbar } from './components/Navbar';
+import SearchMenu from './components/SearchMenu';
+import { ProductPage } from './components/ProductPage';
+import { LookbookPage } from './components/LookbookPage';
+import { AllProductsPage } from './components/AllProductsPage';
 
 const App: React.FC = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/login" element={<Login />} />
-    </Routes>
+    <div className="bg-gray-900">
+      <Navbar 
+        onLoginClick={() => setIsLoginOpen(true)}
+        onSearchClick={() => setIsSearchOpen(true)}
+      />
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<AllProductsPage />} />
+          <Route path="/lookbook" element={<LookbookPage />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/product/:id" element={<ProductPage />} />
+        </Routes>
+      </main>
+      <Login isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <SearchMenu isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </div>
   );
 };
 

@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook } from 'lucide-react';
-import { Navbar } from './Navbar';
+import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook, ShoppingCart } from 'lucide-react';
 import { GlassButton, GlassCard, Badge } from './GlassUI';
 import { PRODUCTS, TESTIMONIALS } from '../constants';
 import { Product, ProductCategory } from '../types';
+import { useCart } from '../context/CartContext';
+import { ProductModal } from './ProductModal';
+import { Link } from 'react-router-dom';
 
 // --- HELPER COMPONENTS WITHIN APP.TSX TO SIMPLIFY ---
 
-const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+// ... (other code)
+
+const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product) => void; }> = ({ product, onViewProduct }) => {
+  const { addToCart } = useCart();
+
   return (
     <GlassCard className="group relative flex flex-col h-full">
       {/* Badges */}
@@ -34,9 +40,13 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         />
         {/* Add to Cart Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-4 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <GlassButton size="sm" className="w-full bg-white/90 text-black backdrop-blur-none">
-                Schnellansicht
-            </GlassButton>
+          <GlassButton 
+            size="sm" 
+            className="w-full bg-white/90 text-black backdrop-blur-none"
+            onClick={() => onViewProduct(product)}
+          >
+            View Product
+          </GlassButton>
         </div>
       </div>
 
@@ -65,14 +75,13 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
                 )}
                 <span className="text-xl font-display font-bold text-white">€{product.price.toFixed(2)}</span>
             </div>
-            <a 
-                href={product.affiliateLink} 
-                target="_blank" 
-                rel="noreferrer"
-                className="bg-lumio-neon text-black font-bold py-2 px-4 rounded-lg text-sm hover:bg-cyan-300 transition-colors shadow-[0_0_15px_rgba(0,243,255,0.4)]"
+            <button 
+                onClick={() => addToCart(product)}
+                className="bg-lumio-neon text-black font-bold py-2 px-4 rounded-lg text-sm hover:bg-cyan-300 transition-colors shadow-[0_0_15px_rgba(0,243,255,0.4)] flex items-center gap-2"
             >
-                Kaufen
-            </a>
+                <ShoppingCart className="w-4 h-4" />
+                <span>Add to cart</span>
+            </button>
         </div>
       </div>
     </GlassCard>
@@ -129,6 +138,7 @@ export const HomePage: React.FC = () => {
   
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'All'>('All');
   const [filteredProducts, setFilteredProducts] = useState(PRODUCTS);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     if (activeCategory === 'All') {
@@ -140,8 +150,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-lumio-dark text-white font-sans selection:bg-lumio-neon selection:text-black">
-      <Navbar />
-
       {/* HERO SECTION */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background simulating video/glow */}
@@ -247,16 +255,18 @@ export const HomePage: React.FC = () => {
                   transition={{ duration: 0.3 }}
                   key={product.id}
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} onViewProduct={setSelectedProduct} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
           
           <div className="mt-12 text-center">
-            <GlassButton variant="outline" size="lg">
-              Alle Produkte anzeigen
-            </GlassButton>
+            <Link to="/products">
+              <GlassButton variant="outline" size="lg">
+                Alle Produkte anzeigen
+              </GlassButton>
+            </Link>
           </div>
         </div>
       </section>
@@ -270,7 +280,7 @@ export const HomePage: React.FC = () => {
                { icon: Box, title: "Premium Qualität", desc: "Handverlesene Materialien und robuster Bau für Langlebigkeit." },
                { icon: TrendingUp, title: "Trending Ästhetik", desc: "Wir kuratieren nur, was auf TikTok und IG viral geht." },
              ].map((feature, idx) => (
-               <GlassCard key={idx} className="flex flex-col items-center text-center" hoverEffect={false}>
+               <GlassCard key={idx} className="flex flex-col items-center text-center">
                   <div className="p-4 rounded-full bg-white/5 mb-6 text-lumio-neon">
                     <feature.icon className="w-8 h-8" />
                   </div>
@@ -306,7 +316,9 @@ export const HomePage: React.FC = () => {
                ))}
              </div>
              <div className="mt-10">
-               <GlassButton variant="primary">Lookbook ansehen</GlassButton>
+               <Link to="/lookbook">
+                <GlassButton variant="primary">Lookbook ansehen</GlassButton>
+               </Link>
              </div>
           </div>
           
@@ -393,6 +405,8 @@ export const HomePage: React.FC = () => {
       </section>
       
       <Footer />
+      
+      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </div>
   );
 };

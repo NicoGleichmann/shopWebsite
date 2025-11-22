@@ -4,6 +4,7 @@ import { Navbar } from './Navbar';
 import { GlassCard } from './GlassUI';
 import { X, Minus, Plus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const EmptyCart = () => (
     <div className="text-center py-20">
@@ -21,12 +22,7 @@ const EmptyCart = () => (
 
 
 export const Cart: React.FC = () => {
-  // DUMMY DATA - replace with actual cart state
-  const cartItems = [
-    { id: 1, name: "Aura RGB Lightstrip", price: 59.99, quantity: 1, image: "https://picsum.photos/200/200?random=1", stock: 'in-stock' },
-    { id: 2, name: "Galaxy Projector 2.0", price: 89.90, quantity: 2, image: "https://picsum.photos/200/200?random=2", stock: 'in-stock' },
-    { id: 3, name: "HexaGlide Panels (9 Pack)", price: 199.50, quantity: 1, image: "https://picsum.photos/200/200?random=3", stock: 'low' },
-  ];
+  const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
 
@@ -53,7 +49,7 @@ export const Cart: React.FC = () => {
                                     <div className="flex-grow">
                                         <div className="flex justify-between items-start">
                                             <h3 className="font-bold text-lg text-white">{item.name}</h3>
-                                            <button className="text-gray-400 hover:text-white transition-colors">
+                                            <button onClick={() => removeFromCart(item.id)} className="text-gray-400 hover:text-white transition-colors">
                                                 <X className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -61,9 +57,9 @@ export const Cart: React.FC = () => {
                                         
                                         <div className="mt-4 flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <button className="p-1 rounded-full glass-panel-secondary"><Minus className="w-4 h-4" /></button>
+                                                <button onClick={() => decreaseQuantity(item.id)} className="p-1 rounded-full glass-panel-secondary"><Minus className="w-4 h-4" /></button>
                                                 <span>{item.quantity}</span>
-                                                <button className="p-1 rounded-full glass-panel-secondary"><Plus className="w-4 h-4" /></button>
+                                                <button onClick={() => increaseQuantity(item.id)} className="p-1 rounded-full glass-panel-secondary"><Plus className="w-4 h-4" /></button>
                                             </div>
                                             <span className="font-bold text-lg">€{(item.price * item.quantity).toFixed(2)}</span>
                                         </div>
@@ -93,9 +89,9 @@ export const Cart: React.FC = () => {
                                 <span>€{total.toFixed(2)}</span>
                             </div>
                         </div>
-                        <button className="mt-8 w-full bg-lumio-neon text-black font-bold py-3 px-4 rounded-lg text-base hover:bg-cyan-300 transition-colors shadow-[0_0_20px_rgba(0,243,255,0.5)]">
+                        <Link to="/checkout" className="mt-8 block w-full text-center bg-lumio-neon text-black font-bold py-3 px-4 rounded-lg text-base hover:bg-cyan-300 transition-colors shadow-[0_0_20px_rgba(0,243,255,0.5)]">
                             Sicher zur Kasse
-                        </button>
+                        </Link>
                     </GlassCard>
                     <div className="text-center mt-4">
                         <Link to="/" className="text-sm text-gray-400 hover:text-white flex items-center justify-center gap-2">
