@@ -11,10 +11,15 @@ import { ProductPage } from './components/ProductPage';
 import { LookbookPage } from './components/LookbookPage';
 import { AllProductsPage } from './components/AllProductsPage';
 import { useAuth } from './context/AuthContext';
+import { SettingsModal } from './components/SettingsModal';
 
 const App: React.FC = () => {
   const { isLoginModalOpen, openLoginModal, closeLoginModal, token, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
+  const openSettingsModal = () => setIsSettingsModalOpen(true);
+  const closeSettingsModal = () => setIsSettingsModalOpen(false);
 
   return (
     <div className="bg-gray-900">
@@ -23,6 +28,7 @@ const App: React.FC = () => {
         onSearchClick={() => setIsSearchOpen(true)}
         isLoggedIn={!!token}
         onLogout={logout}
+        onSettingsClick={openSettingsModal}
       />
       <main>
         <Routes>
@@ -36,6 +42,7 @@ const App: React.FC = () => {
       </main>
       <Login isOpen={isLoginModalOpen} onClose={closeLoginModal} />
       <SearchMenu isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <SettingsModal isOpen={isSettingsModalOpen} onClose={closeSettingsModal} />
     </div>
   );
 };

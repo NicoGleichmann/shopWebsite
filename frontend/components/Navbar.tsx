@@ -10,9 +10,10 @@ interface NavbarProps {
   onSearchClick?: () => void;
   isLoggedIn: boolean;
   onLogout: () => void;
+  onSettingsClick: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = () => {}, isLoggedIn, onLogout }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = () => {}, isLoggedIn, onLogout, onSettingsClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -96,10 +97,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = ()
                             <UserCircle size={16} />
                             <span>Profil</span>
                         </Link>
-                        <Link to="/settings" onClick={() => setProfileMenuOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-colors">
+                        <button onClick={() => { setProfileMenuOpen(false); onSettingsClick(); }} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-colors">
                             <Settings size={16} />
                             <span>Einstellungen</span>
-                        </Link>
+                        </button>
                         <div className="h-px bg-white/10 my-1" />
                         <button onClick={() => { onLogout(); setProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-md transition-colors">
                             <LogOutIcon size={16} />
@@ -157,10 +158,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = ()
                     <UserCircle size={20} />
                     <span>Profil</span>
                   </Link>
-                  <Link to="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 text-lg font-medium text-gray-200">
+                  <button onClick={() => { setMobileMenuOpen(false); onSettingsClick(); }} className="flex items-center gap-4 text-lg font-medium text-gray-200">
                     <Settings size={20} />
                     <span>Einstellungen</span>
-                  </Link>
+                  </button>
                   <button
                     onClick={() => {
                       onLogout();
