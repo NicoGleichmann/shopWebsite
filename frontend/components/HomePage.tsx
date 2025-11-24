@@ -159,6 +159,54 @@ export const HomePage: React.FC = () => {
     }
   }, [activeCategory]);
 
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState('');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) {
+      setSubscribeMessage('Bitte gib eine gültige E-Mail-Adresse ein.');
+      return;
+    }
+    setIsSubscribing(true);
+    setSubscribeMessage('');
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setSubscribeMessage('Danke für deine Anmeldung! Check deine Mails.');
+        setEmail('');
+        setTimeout(() => setSubscribeMessage(''), 5000);
+      } else {
+        const errorText = await response.text();
+        let errorMessage = 'Anmeldung fehlgeschlagen.';
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || errorMessage;
+        } catch (e) {
+          console.error('Non-JSON error response from server:', errorText);
+          errorMessage = 'Ein Serverfehler ist aufgetreten. Status: ' + response.status;
+        }
+        setSubscribeMessage(errorMessage);
+        setTimeout(() => setSubscribeMessage(''), 7000);
+      }
+    } catch (error) {
+      console.error('Subscription fetch error:', error);
+      setSubscribeMessage('Ein Netzwerkfehler ist aufgetreten. Bitte versuche es später erneut.');
+      setTimeout(() => setSubscribeMessage(''), 7000);
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-lumio-dark text-white font-sans selection:bg-lumio-neon selection:text-black">
       {/* HERO SECTION */}
@@ -400,16 +448,23 @@ export const HomePage: React.FC = () => {
                <p className="text-gray-300 mb-8 max-w-lg mx-auto">
                  Erhalte exklusive Deals, Setup-Guides und Early-Access zu neuen Drops. Kein Spam, nur Vibes.
                </p>
-               <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+               <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto" onSubmit={handleSubscribe}>
                  <input 
                    type="email" 
                    placeholder="Deine Email Adresse" 
                    className="flex-grow bg-black/50 border border-white/20 rounded-full px-6 py-3 text-white focus:outline-none focus:border-lumio-neon transition-colors"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
                  />
-                 <GlassButton variant="primary" glow className="px-8">
-                   Anmelden
+                 <GlassButton type="submit" variant="primary" glow className="px-8" disabled={isSubscribing}>
+                   {isSubscribing ? 'Wird angemeldet...' : 'Anmelden'}
                  </GlassButton>
                </form>
+               {subscribeMessage && (
+                  <p className={`mt-4 text-sm ${subscribeMessage.includes('Danke') ? 'text-green-400' : 'text-red-400'}`}>
+                    {subscribeMessage}
+                  </p>
+                )}
              </div>
           </GlassCard>
         </div>

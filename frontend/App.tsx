@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const closeSettingsModal = () => setIsSettingsModalOpen(false);
 
   return (
-    <div className="bg-gray-900">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
       <Navbar 
         onLoginClick={openLoginModal}
         onSearchClick={() => setIsSearchOpen(true)}

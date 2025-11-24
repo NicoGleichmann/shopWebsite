@@ -68,19 +68,35 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #00f3ff;
       }
+
+      :root {
+        --glass-bg: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(0, 0, 0, 0.1);
+        --glass-hover-bg: rgba(255, 255, 255, 1);
+        --glass-hover-border: rgba(0, 0, 0, 0.2);
+        --text-color: #050507;
+      }
+      .dark {
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-hover-bg: rgba(255, 255, 255, 0.06);
+        --glass-hover-border: rgba(255, 255, 255, 0.2);
+        --text-color: #ffffff;
+      }
+
       .glass-panel {
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--glass-bg);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--glass-border);
       }
       .glass-panel-hover:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: var(--glass-hover-bg);
+        border: 1px solid var(--glass-hover-border);
         box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
       }
       .text-glow {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        text-shadow: 0 0 10px rgba(var(--text-color), 0.3);
       }
       .text-glow-neon {
         text-shadow: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
