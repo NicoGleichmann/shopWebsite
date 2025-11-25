@@ -1,18 +1,16 @@
+// frontend/components/HomePage.tsx
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook, ShoppingCart } from 'lucide-react';
+import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook, ShoppingCart, Mail } from 'lucide-react';
 import { GlassButton, GlassCard, Badge } from './GlassUI';
 import { PRODUCTS, TESTIMONIALS } from '../constants';
 import { Product, ProductCategory } from '../types';
 import { useCart } from '../context/CartContext';
 import { ProductModal } from './ProductModal';
 import { Link } from 'react-router-dom';
-
 import { useAuth } from '../context/AuthContext';
 
 // --- HELPER COMPONENTS WITHIN APP.TSX TO SIMPLIFY ---
-
-// ... (other code)
 
 const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product) => void; }> = ({ product, onViewProduct }) => {
   const { addToCart } = useCart();
@@ -439,32 +437,77 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* NEWSLETTER CTA */}
-      <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <GlassCard className="relative overflow-hidden p-8 md:p-12 text-center border border-lumio-neon/30">
+      <section className="py-24 px-6 relative">
+        {/* Optional: Ambient Background Glow behind the card */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-lumio-neon/20 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <GlassCard className="relative overflow-hidden p-8 md:p-12 text-center border border-lumio-neon/30 backdrop-blur-xl bg-black/40 shadow-[0_0_50px_-12px_rgba(var(--lumio-neon-rgb),0.3)]">
+             
+             {/* Internal Gradient Overlay */}
              <div className="absolute inset-0 bg-gradient-to-br from-lumio-neon/10 via-transparent to-lumio-hot/10 pointer-events-none" />
+             
              <div className="relative z-10">
-               <h2 className="text-3xl md:text-5xl font-display font-bold mb-4">JOIN THE GLOW CLUB</h2>
-               <p className="text-gray-300 mb-8 max-w-lg mx-auto">
+               <h2 className="text-3xl md:text-5xl font-display font-bold mb-4 tracking-tight drop-shadow-lg text-white">
+                 JOIN THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-lumio-neon to-lumio-hot">GLOW CLUB</span>
+               </h2>
+               
+               <p className="text-gray-300 mb-8 max-w-lg mx-auto text-lg leading-relaxed">
                  Erhalte exklusive Deals, Setup-Guides und Early-Access zu neuen Drops. Kein Spam, nur Vibes.
                </p>
-               <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto" onSubmit={handleSubscribe}>
-                 <input 
-                   type="email" 
-                   placeholder="Deine Email Adresse" 
-                   className="flex-grow bg-black/50 border border-white/20 rounded-full px-6 py-3 text-white focus:outline-none focus:border-lumio-neon transition-colors"
-                   value={email}
-                   onChange={(e) => setEmail(e.target.value)}
-                 />
-                 <GlassButton type="submit" variant="primary" glow className="px-8" disabled={isSubscribing}>
-                   {isSubscribing ? 'Wird angemeldet...' : 'Anmelden'}
+               
+               <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto relative" onSubmit={handleSubscribe}>
+                 <div className="relative flex-grow">
+                   {/* Accessibility Label */}
+                   <label htmlFor="email-address" className="sr-only">Email Adresse</label>
+                   
+                   {/* Icon */}
+                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                     <Mail className="h-5 w-5" aria-hidden="true" /> 
+                   </div>
+
+                   <input 
+                     id="email-address"
+                     name="email"
+                     type="email" 
+                     autoComplete="email"
+                     required
+                     disabled={isSubscribing}
+                     placeholder="Deine Email Adresse" 
+                     className="w-full bg-black/60 border border-white/10 rounded-full pl-11 pr-6 py-3 text-white placeholder-gray-500 
+                                focus:outline-none focus:border-lumio-neon focus:ring-1 focus:ring-lumio-neon 
+                                disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-inner"
+                     value={email}
+                     onChange={(e) => setEmail(e.target.value)}
+                   />
+                 </div>
+
+                 <GlassButton 
+                   type="submit" 
+                   variant="primary" 
+                   glow 
+                   className="px-8 whitespace-nowrap" 
+                   disabled={isSubscribing}
+                 >
+                   {isSubscribing ? (
+                     <span className="flex items-center gap-2">
+                       <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
+                       <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-75" />
+                       <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-150" />
+                     </span>
+                   ) : 'Anmelden'}
                  </GlassButton>
                </form>
-               {subscribeMessage && (
-                  <p className={`mt-4 text-sm ${subscribeMessage.includes('Danke') ? 'text-green-400' : 'text-red-400'}`}>
-                    {subscribeMessage}
-                  </p>
-                )}
+               
+               {/* Status Message with Transition */}
+               <div className={`mt-6 h-6 text-sm font-medium transition-all duration-500 ease-in-out ${subscribeMessage ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                  {subscribeMessage && (
+                    <span className={`${subscribeMessage.includes('Danke') ? 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-rose-400'}`}>
+                      {subscribeMessage}
+                    </span>
+                  )}
+               </div>
+
              </div>
           </GlassCard>
         </div>

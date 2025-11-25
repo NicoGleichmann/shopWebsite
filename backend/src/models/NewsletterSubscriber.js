@@ -13,12 +13,17 @@ const newsletterSubscriberSchema = new mongoose.Schema({
       'Please fill a valid email address',
     ],
   },
+  isVerified: { 
+    type: Boolean, 
+    default: false // Standardmäßig nicht bestätigt
+  },
+  verificationToken: { 
+    type: String 
+  },
   subscribedAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-const NewsletterSubscriber = mongoose.model('NewsletterSubscriber', newsletterSubscriberSchema);
-
-export default NewsletterSubscriber;
+export default mongoose.model('NewsletterSubscriber', newsletterSchema);

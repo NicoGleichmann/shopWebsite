@@ -10,6 +10,7 @@ import SearchMenu from './components/SearchMenu';
 import { ProductPage } from './components/ProductPage';
 import { LookbookPage } from './components/LookbookPage';
 import { AllProductsPage } from './components/AllProductsPage';
+import { VerifyEmailPage } from './components/VerifyEmailPage';
 import { useAuth } from './context/AuthContext';
 import { SettingsModal } from './components/SettingsModal';
 
@@ -38,6 +39,10 @@ const App: React.FC = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          
+          {/* NEUE ROUTE FÜR EMAIL VERIFIZIERUNG */}
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          
         </Routes>
       </main>
       <Login isOpen={isLoginModalOpen} onClose={closeLoginModal} />
