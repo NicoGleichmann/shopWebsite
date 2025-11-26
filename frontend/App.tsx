@@ -13,6 +13,10 @@ import { AllProductsPage } from './components/AllProductsPage';
 import { VerifyEmailPage } from './components/VerifyEmailPage';
 import { FAQPage } from './components/FAQPage';
 import { ContactPage } from './components/ContactPage';
+import { AboutUsPage } from './components/AboutUsPage';
+import AGBPage from './components/AGBPage';
+import DatenschutzPage from './components/DatenschutzPage';
+import ImpressumPage from './components/ImpressumPage';
 import { useAuth } from './context/AuthContext';
 import { SettingsModal } from './components/SettingsModal';
 
@@ -40,6 +44,10 @@ const App: React.FC = () => {
           <Route path="/lookbook" element={<LookbookPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/agb" element={<AGBPage />} />
+          <Route path="/datenschutz" element={<DatenschutzPage />} />
+          <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductPage />} />

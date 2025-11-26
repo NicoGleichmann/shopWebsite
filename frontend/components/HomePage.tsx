@@ -292,9 +292,11 @@ export const HomePage: React.FC = () => {
             <GlassButton variant="primary" glow size="lg" onClick={() => document.getElementById('shop')?.scrollIntoView({behavior: 'smooth'})}>
               Jetzt shoppen <ArrowRight className="w-5 h-5" />
             </GlassButton>
-            <GlassButton variant="secondary" size="lg">
-              Bestseller ansehen
-            </GlassButton>
+            <Link to="/products?category=bestseller">
+              <GlassButton variant="secondary" size="lg">
+                Bestseller ansehen
+              </GlassButton>
+            </Link>
           </motion.div>
         </motion.div>
 
