@@ -1,3 +1,4 @@
+// backend/src/controllers/newsletterController.js
 import NewsletterSubscriber from '../models/NewsletterSubscriber.js';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';

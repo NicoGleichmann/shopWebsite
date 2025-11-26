@@ -11,6 +11,8 @@ import { ProductPage } from './components/ProductPage';
 import { LookbookPage } from './components/LookbookPage';
 import { AllProductsPage } from './components/AllProductsPage';
 import { VerifyEmailPage } from './components/VerifyEmailPage';
+import { FAQPage } from './components/FAQPage';
+import { ContactPage } from './components/ContactPage';
 import { useAuth } from './context/AuthContext';
 import { SettingsModal } from './components/SettingsModal';
 
@@ -23,7 +25,7 @@ const App: React.FC = () => {
   const closeSettingsModal = () => setIsSettingsModalOpen(false);
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
       <Navbar 
         onLoginClick={openLoginModal}
         onSearchClick={() => setIsSearchOpen(true)}
@@ -31,11 +33,13 @@ const App: React.FC = () => {
         onLogout={logout}
         onSettingsClick={openSettingsModal}
       />
-      <main>
+      <main className="flex-grow">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<AllProductsPage />} />
           <Route path="/lookbook" element={<LookbookPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductPage />} />

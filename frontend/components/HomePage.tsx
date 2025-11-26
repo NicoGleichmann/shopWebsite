@@ -1,7 +1,7 @@
 // frontend/components/HomePage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook, ShoppingCart, Mail } from 'lucide-react';
+import { Star, ArrowRight, Zap, TrendingUp, Box, Check, Instagram, Twitter, Facebook, ShoppingCart, Mail, ChevronDown } from 'lucide-react';
 import { GlassButton, GlassCard, Badge } from './GlassUI';
 import { PRODUCTS, TESTIMONIALS } from '../constants';
 import { Product, ProductCategory } from '../types';
@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import { ProductModal } from './ProductModal';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Footer } from './Footer';
 
 // --- HELPER COMPONENTS WITHIN APP.TSX TO SIMPLIFY ---
 
@@ -97,65 +98,98 @@ const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product
   );
 };
 
-const Footer = () => (
-  <footer className="border-t border-white/10 bg-black py-12 px-6 mt-20">
-    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-           <Zap className="w-5 h-5 text-lumio-neon" />
-           <span className="font-display font-bold text-lg text-white">LUMIO</span>
-        </div>
-        <p className="text-gray-400 text-sm leading-relaxed">
-          Die Destination für futuristische Beleuchtung und ästhetische Setups. Wir kuratieren die besten Produkte für deinen Vibe.
-        </p>
-      </div>
-      <div>
-        <h4 className="text-white font-bold mb-4">Shop</h4>
-        <ul className="space-y-2 text-sm text-gray-400">
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Alle Produkte</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Bestseller</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Neuheiten</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Geschenkgutscheine</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-white font-bold mb-4">Support</h4>
-        <ul className="space-y-2 text-sm text-gray-400">
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Versand & Rückgabe</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">FAQ</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Kontakt</a></li>
-          <li><a href="#" className="hover:text-lumio-neon transition-colors">Affiliate Partner</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 className="text-white font-bold mb-4">Stay Glowing</h4>
-        <div className="flex gap-4 mb-4">
-            <Instagram className="w-5 h-5 text-gray-400 hover:text-lumio-hot cursor-pointer transition-colors" />
-            <Twitter className="w-5 h-5 text-gray-400 hover:text-lumio-neon cursor-pointer transition-colors" />
-            <Facebook className="w-5 h-5 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors" />
-        </div>
-        <p className="text-xs text-gray-500">© 2024 Lumio. All rights reserved.</p>
-      </div>
+const Dropdown: React.FC<{
+  options: string[];
+  selected: string;
+  onSelect: (option: string) => void;
+  className?: string;
+}> = ({ options, selected, onSelect, className }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="px-4 py-2 rounded-full text-sm font-medium transition-all glass-panel text-gray-400 hover:text-white hover:bg-white/10 flex items-center gap-2"
+      >
+        {selected}
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full mt-2 w-48 bg-gray-900/80 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl z-50"
+          >
+            <ul className="py-1">
+              {options.map((option) => (
+                <li
+                  key={option}
+                  onClick={() => {
+                    onSelect(option);
+                    setIsOpen(false);
+                  }}
+                  className="px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer"
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  </footer>
-);
+  );
+};
+
+
 
 export const HomePage: React.FC = () => {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const opacityHero = useTransform(scrollY, [0, 400], [1, 0]);
   
+  type SpecialFilter = 'None' | 'Neuheiten' | 'Bestseller' | 'Sale';
+
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'All'>('All');
+  const [activeSpecialFilter, setActiveSpecialFilter] = useState<SpecialFilter>('None');
   const [filteredProducts, setFilteredProducts] = useState(PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    if (activeCategory === 'All') {
-      setFilteredProducts(PRODUCTS);
-    } else {
-      setFilteredProducts(PRODUCTS.filter(p => p.category === activeCategory));
+    let products = [...PRODUCTS];
+
+    // 1. Apply special filter
+    if (activeSpecialFilter === 'Neuheiten') {
+        products = products.filter(p => p.isNew);
+    } else if (activeSpecialFilter === 'Bestseller') {
+        products = products.filter(p => p.isBestseller);
+    } else if (activeSpecialFilter === 'Sale') {
+        products = products.filter(p => p.originalPrice !== undefined);
     }
-  }, [activeCategory]);
+
+    // 2. Apply category filter
+    if (activeCategory !== 'All') {
+        products = products.filter(p => p.category === activeCategory);
+    }
+
+    setFilteredProducts(products);
+  }, [activeCategory, activeSpecialFilter]);
 
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -281,7 +315,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Curated Collection</h2>
-             <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+             <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4">
                 {['All', ...Object.values(ProductCategory)].map((cat) => (
                   <button
                     key={cat}
@@ -295,6 +329,11 @@ export const HomePage: React.FC = () => {
                     {cat}
                   </button>
                 ))}
+                <Dropdown
+                    options={['None', 'Neuheiten', 'Bestseller', 'Sale']}
+                    selected={activeSpecialFilter === 'None' ? 'Weitere Filter' : activeSpecialFilter}
+                    onSelect={(option) => setActiveSpecialFilter(option as SpecialFilter)}
+                />
              </div>
           </div>
 

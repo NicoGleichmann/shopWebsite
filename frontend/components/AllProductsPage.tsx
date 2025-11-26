@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassButton, GlassCard, Badge } from './GlassUI';
 import { PRODUCTS } from '../constants';
 import { Product, ProductCategory } from '../types';
 import { useCart } from '../context/CartContext';
 import { ProductModal } from './ProductModal';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, ChevronDown } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { Footer } from './Footer';
 
 import { useAuth } from '../context/AuthContext';
 
@@ -89,18 +91,101 @@ const ProductCard: React.FC<{ product: Product; onViewProduct: (product: Product
     );
   };
 
+  const Dropdown: React.FC<{
+    options: string[];
+    selected: string;
+    onSelect: (option: string) => void;
+    className?: string;
+  }> = ({ options, selected, onSelect, className }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+  
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
+  
+    return (
+      <div className={`relative ${className}`} ref={dropdownRef}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="px-4 py-2 rounded-full text-sm font-medium transition-all glass-panel text-gray-400 hover:text-white hover:bg-white/10 flex items-center gap-2"
+        >
+          {selected}
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute top-full mt-2 w-48 bg-gray-900/80 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl z-50"
+            >
+              <ul className="py-1">
+                {options.map((option) => (
+                  <li
+                    key={option}
+                    onClick={() => {
+                      onSelect(option);
+                      setIsOpen(false);
+                    }}
+                    className="px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white cursor-pointer"
+                  >
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
 export const AllProductsPage: React.FC = () => {
+  type SpecialFilter = 'None' | 'Neuheiten' | 'Bestseller' | 'Sale';
+
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'All'>('All');
+  const [activeSpecialFilter, setActiveSpecialFilter] = useState<SpecialFilter>('None');
   const [filteredProducts, setFilteredProducts] = useState(PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
-    if (activeCategory === 'All') {
-      setFilteredProducts(PRODUCTS);
-    } else {
-      setFilteredProducts(PRODUCTS.filter(p => p.category === activeCategory));
+    const params = new URLSearchParams(location.search);
+    const filter = params.get('filter');
+    if (filter === 'Bestseller' || filter === 'Neuheiten' || filter === 'Sale') {
+        setActiveSpecialFilter(filter);
     }
-  }, [activeCategory]);
+  }, [location.search]);
+
+  useEffect(() => {
+    let products = [...PRODUCTS];
+
+    // 1. Apply special filter
+    if (activeSpecialFilter === 'Neuheiten') {
+        products = products.filter(p => p.isNew);
+    } else if (activeSpecialFilter === 'Bestseller') {
+        products = products.filter(p => p.isBestseller);
+    } else if (activeSpecialFilter === 'Sale') {
+        products = products.filter(p => p.originalPrice !== undefined);
+    }
+
+    // 2. Apply category filter
+    if (activeCategory !== 'All') {
+        products = products.filter(p => p.category === activeCategory);
+    }
+
+    setFilteredProducts(products);
+  }, [activeCategory, activeSpecialFilter]);
 
   return (
     <div className="min-h-screen bg-lumio-dark text-white font-sans selection:bg-lumio-neon selection:text-black">
@@ -109,7 +194,7 @@ export const AllProductsPage: React.FC = () => {
           <div className="text-center mb-12">
              <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">All Products</h2>
              <p className="text-lg text-gray-400">Browse our curated collection of futuristic lighting.</p>
-             <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-8">
+             <div className="flex flex-wrap justify-center items-center gap-2 md:gap-4 mt-8">
                 {['All', ...Object.values(ProductCategory)].map((cat) => (
                   <button
                     key={cat}
@@ -123,6 +208,11 @@ export const AllProductsPage: React.FC = () => {
                     {cat}
                   </button>
                 ))}
+                <Dropdown
+                    options={['None', 'Neuheiten', 'Bestseller', 'Sale']}
+                    selected={activeSpecialFilter === 'None' ? 'Weitere Filter' : activeSpecialFilter}
+                    onSelect={(option) => setActiveSpecialFilter(option as SpecialFilter)}
+                />
              </div>
           </div>
 
@@ -148,6 +238,7 @@ export const AllProductsPage: React.FC = () => {
         </div>
       </section>
       <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      <Footer />
     </div>
   );
 };
