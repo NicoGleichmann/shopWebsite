@@ -1,3 +1,4 @@
+// frontend/src/components/Footer.tsx
 import React from 'react';
 import { Zap, Youtube, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';

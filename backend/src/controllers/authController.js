@@ -114,3 +114,18 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ err });
   }
 };
+
+// --- GET USER PROFILE ---
+export const getUserProfile = async (req, res) => {
+  try {
+    // req.user.id wird von der authMiddleware gesetzt
+    const user = await User.findById(req.user.id).select("-password"); 
+    if (!user) {
+      return res.status(404).json({ msg: "User nicht gefunden" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Serverfehler beim Abrufen des Profils" });
+  }
+};

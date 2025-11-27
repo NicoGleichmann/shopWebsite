@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const newsletterSubscriberSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    required: [true, 'Please add an email'],
     unique: true,
     lowercase: true,
     trim: true,
@@ -15,7 +15,7 @@ const newsletterSubscriberSchema = new mongoose.Schema({
   },
   isVerified: { 
     type: Boolean, 
-    default: false // Standardmäßig nicht bestätigt
+    default: false 
   },
   verificationToken: { 
     type: String 
@@ -26,4 +26,4 @@ const newsletterSubscriberSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('NewsletterSubscriber', newsletterSchema);
+export default mongoose.model('NewsletterSubscriber', newsletterSubscriberSchema);

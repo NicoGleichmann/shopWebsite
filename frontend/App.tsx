@@ -19,6 +19,8 @@ import DatenschutzPage from './components/DatenschutzPage';
 import ImpressumPage from './components/ImpressumPage';
 import { useAuth } from './context/AuthContext';
 import { SettingsModal } from './components/SettingsModal';
+import { VerifyNewsletterPage } from './components/VerifyNewsletterPage';
+import ProfilePage from './components/ProfilePage';
 
 const App: React.FC = () => {
   const { isLoginModalOpen, openLoginModal, closeLoginModal, token, logout } = useAuth();
@@ -50,10 +52,12 @@ const App: React.FC = () => {
           <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/product/:id" element={<ProductPage />} />
           
           {/* NEUE ROUTE FÜR EMAIL VERIFIZIERUNG */}
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/verify-newsletter" element={<VerifyNewsletterPage />} />
           
         </Routes>
       </main>
