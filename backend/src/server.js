@@ -7,6 +7,8 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import newsletterRoutes from "./routes/newsletterRoutes.js";
 
+import * as contactRoutes from "./routes/contactRoutes.js";
+
 dotenv.config();
 connectDB();
 
@@ -17,6 +19,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/contact", contactRoutes.default);
 
 app.listen(5000, () => console.log("Server running on 5000"));
 // nodemon backend/src/server.js

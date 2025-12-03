@@ -1,4 +1,3 @@
-// frontend/App.tsx
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { HomePage } from './components/HomePage';
@@ -20,15 +19,19 @@ import ImpressumPage from './components/ImpressumPage';
 import { useAuth } from './context/AuthContext';
 import { SettingsModal } from './components/SettingsModal';
 import { VerifyNewsletterPage } from './components/VerifyNewsletterPage';
-import ProfilePage from './components/ProfilePage';
+import { ProfileModal } from './components/ProfileModal';
 
 const App: React.FC = () => {
   const { isLoginModalOpen, openLoginModal, closeLoginModal, token, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const openSettingsModal = () => setIsSettingsModalOpen(true);
   const closeSettingsModal = () => setIsSettingsModalOpen(false);
+
+  const openProfileModal = () => setIsProfileModalOpen(true);
+  const closeProfileModal = () => setIsProfileModalOpen(false);
 
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
@@ -38,6 +41,7 @@ const App: React.FC = () => {
         isLoggedIn={!!token}
         onLogout={logout}
         onSettingsClick={openSettingsModal}
+        onProfileClick={openProfileModal}
       />
       <main className="flex-grow">
         <Routes>
@@ -52,7 +56,6 @@ const App: React.FC = () => {
           <Route path="/impressum" element={<ImpressumPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/product/:id" element={<ProductPage />} />
           
           {/* NEUE ROUTE FÜR EMAIL VERIFIZIERUNG */}
@@ -64,6 +67,7 @@ const App: React.FC = () => {
       <Login isOpen={isLoginModalOpen} onClose={closeLoginModal} />
       <SearchMenu isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <SettingsModal isOpen={isSettingsModalOpen} onClose={closeSettingsModal} />
+      <ProfileModal isOpen={isProfileModalOpen} onClose={closeProfileModal} />
     </div>
   );
 };

@@ -11,21 +11,34 @@ export const ContactPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<{type: 'sending' | 'success' | 'error', message: string} | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus({type: 'sending', message: 'Sending...'});
-    
-    setTimeout(() => {
-      if (name && email && message) {
-        setStatus({type: 'success', message: 'Message sent successfully!'});
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setStatus({type: 'success', message: data.message || 'Message sent successfully!'});
         setName('');
         setEmail('');
         setMessage('');
       } else {
-        setStatus({type: 'error', message: 'Please fill out all fields.'});
+        setStatus({type: 'error', message: data.message || 'An error occurred.'});
       }
+    } catch (error) {
+      setStatus({type: 'error', message: 'An error occurred.'});
+    } finally {
       setTimeout(() => setStatus(null), 5000);
-    }, 2000);
+    }
   };
 
   return (

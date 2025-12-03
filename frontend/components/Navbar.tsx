@@ -11,9 +11,10 @@ interface NavbarProps {
   isLoggedIn: boolean;
   onLogout: () => void;
   onSettingsClick: () => void;
+  onProfileClick: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = () => {}, isLoggedIn, onLogout, onSettingsClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = () => {}, isLoggedIn, onLogout, onSettingsClick, onProfileClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -93,10 +94,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = ()
                   className="absolute top-full right-0 mt-3 w-48"
                 >
                     <div className="glass-panel p-2 rounded-lg border border-white/10 shadow-2xl">
-                        <Link to="/profile" onClick={() => setProfileMenuOpen(false)} className="flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-colors">
+                        <button onClick={() => { setProfileMenuOpen(false); onProfileClick(); }} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-colors">
                             <UserCircle size={16} />
                             <span>Profil</span>
-                        </Link>
+                        </button>
                         <button onClick={() => { setProfileMenuOpen(false); onSettingsClick(); }} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-colors">
                             <Settings size={16} />
                             <span>Einstellungen</span>
@@ -154,10 +155,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onLoginClick, onSearchClick = ()
               <div className="h-px bg-white/10 my-2" />
               {isLoggedIn ? (
                 <>
-                  <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 text-lg font-medium text-gray-200">
+                  <button onClick={() => { setMobileMenuOpen(false); onProfileClick(); }} className="flex items-center gap-4 text-lg font-medium text-gray-200">
                     <UserCircle size={20} />
                     <span>Profil</span>
-                  </Link>
+                  </button>
                   <button onClick={() => { setMobileMenuOpen(false); onSettingsClick(); }} className="flex items-center gap-4 text-lg font-medium text-gray-200">
                     <Settings size={20} />
                     <span>Einstellungen</span>

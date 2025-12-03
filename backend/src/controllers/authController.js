@@ -115,17 +115,22 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// --- GET USER PROFILE ---
+// --- GET USER PROFILE (NEU) ---
 export const getUserProfile = async (req, res) => {
   try {
-    // req.user.id wird von der authMiddleware gesetzt
-    const user = await User.findById(req.user.id).select("-password"); 
+    // req.user wird durch die 'protect' Middleware gesetzt (siehe Routes)
+    const user = await User.findById(req.user.id).select('-password'); // Passwort nicht zurücksenden
+    
     if (!user) {
-      return res.status(404).json({ msg: "User nicht gefunden" });
+      return res.status(404).json({ msg: 'User nicht gefunden' });
     }
+    
     res.json(user);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ err: "Serverfehler beim Abrufen des Profils" });
+    res.status(500).json({ msg: 'Server Fehler beim Laden des Profils' });
   }
 };
+
+// EXPORTS ANPASSEN:
+// export { registerUser, verifyEmail, loginUser, getUserProfile };
